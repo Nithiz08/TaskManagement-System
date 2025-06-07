@@ -1,0 +1,92 @@
+﻿@model TaskManager.Models.User
+
+@{
+    ViewData["Title"] = "User Details";
+}
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h3>@Model.FullName</h3>
+            </div>
+            <div class="card-body">
+                <div class="row mb-3">
+                    <div class="col-sm-3"><strong>First Name:</strong></div>
+                    <div class="col-sm-9">@Model.FirstName</div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-sm-3"><strong>Last Name:</strong></div>
+                    <div class="col-sm-9">@Model.LastName</div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-sm-3"><strong>Email:</strong></div>
+                    <div class="col-sm-9">@Model.Email</div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-sm-3"><strong>Joined:</strong></div>
+                    <div class="col-sm-9">@Model.CreatedDate.ToString("MMM dd, yyyy 'at' hh:mm tt")</div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-sm-3"><strong>Total Tasks:</strong></div>
+                    <div class="col-sm-9">@Model.Tasks.Count()</div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-sm-3"><strong>Completed Tasks:</strong></div>
+                    <div class="col-sm-9">@Model.Tasks.Count(t => t.IsCompleted)</div>
+                </div>
+            </div>
+            <div class="card-footer">
+                <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">Edit</a>
+                <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger">Delete</a>
+                <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (Model.Tasks.Any())
+{
+    <div class="row mt-4">
+        <div class="col-md-12">
+            <h4>User's Tasks</h4>
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Priority</th>
+                            <th>Due Date</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var task in Model.Tasks.OrderByDescending(t => t.CreatedDate))
+                        {
+                            <tr class="@(task.IsCompleted ? "table-success" : "")">
+                                <td>@task.Title</td>
+                                <td>
+                                    <span class="badge @(task.Priority == TaskManager.Models.TaskPriority.High || task.Priority == TaskManager.Models.TaskPriority.Critical ? "bg-danger" :
+                                                                                                 task.Priority == TaskManager.Models.TaskPriority.Medium ? "bg-warning" : "bg-secondary")">
+                                @task.Priority
+                            </span>
+                        </td>
+                        <td>@(task.DueDate?.ToString("MMM dd, yyyy") ?? "No due date")</td>
+                        <td>
+                            <span class="badge @(task.IsCompleted ? "bg-success" : "bg-warning")">
+                                @(task.IsCompleted ? "Completed" : "Pending")
+                            </span>
+                        </td>
+                    </tr>
+                                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+}

@@ -1,0 +1,67 @@
+﻿@model TaskManager.Models.TaskItem
+
+@{
+    ViewData["Title"] = "Task Details";
+}
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h3 class="mb-0">@Model.Title</h3>
+                <span class="badge @(Model.IsCompleted ? "bg-success" : "bg-warning") fs-6">
+                    @(Model.IsCompleted ? "Completed" : "Pending")
+                </span>
+            </div>
+            <div class="card-body">
+                <div class="row mb-3">
+                    <div class="col-sm-3"><strong>Description:</strong></div>
+                    <div class="col-sm-9">@(Model.Description ?? "No description provided")</div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-sm-3"><strong>Assigned To:</strong></div>
+                    <div class="col-sm-9">@Model.User.FullName</div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-sm-3"><strong>Priority:</strong></div>
+                    <div class="col-sm-9">
+                        <span class="badge @(Model.Priority == TaskManager.Models.TaskPriority.High || Model.Priority == TaskManager.Models.TaskPriority.Critical ? "bg-danger" :
+                                                                         Model.Priority == TaskManager.Models.TaskPriority.Medium ? "bg-warning" : "bg-secondary")">
+                            @Model.Priority
+                        </span>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-sm-3"><strong>Created Date:</strong></div>
+                    <div class="col-sm-9">@Model.CreatedDate.ToString("MMM dd, yyyy 'at' hh:mm tt")</div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-sm-3"><strong>Due Date:</strong></div>
+                    <div class="col-sm-9">
+                        @if (Model.DueDate.HasValue)
+                        {
+                            <span>@Model.DueDate.Value.ToString("MMM dd, yyyy")</span>
+                            @if (Model.DueDate < DateTime.Now && !Model.IsCompleted)
+                            {
+                                <span class="badge bg-danger ms-2">Overdue</span>
+                            }
+                        }
+                        else
+                        {
+                            <span class="text-muted">No due date set</span>
+                        }
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer">
+                <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">Edit</a>
+                <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger">Delete</a>
+                <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+            </div>
+        </div>
+    </div>
+</div>

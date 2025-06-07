@@ -1,0 +1,63 @@
+﻿@model IEnumerable<TaskManager.Models.TaskItem>
+
+@{
+    ViewData["Title"] = "Tasks";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2>All Tasks</h2>
+    <a asp-action="Create" class="btn btn-success">Create New Task</a>
+</div>
+
+<div class="table-responsive">
+    <table class="table table-striped table-hover">
+        <thead class="table-dark">
+            <tr>
+                <th>Title</th>
+                <th>Description</th>
+                <th>Assigned To</th>
+                <th>Priority</th>
+                <th>Due Date</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var task in Model)
+            {
+                <tr class="@(task.IsCompleted ? "table-success" : "")">
+                    <td>
+                        <strong>@task.Title</strong>
+                        @if (task.DueDate.HasValue && task.DueDate < DateTime.Now && !task.IsCompleted)
+                        {
+                            <span class="badge bg-danger ms-2">Overdue</span>
+                        }
+                    </td>
+                    <td>@(task.Description ?? "No description")</td>
+                    <td>@task.User.FullName</td>
+                    <td>
+                        <span class="badge @(task.Priority == TaskManager.Models.TaskPriority.High || task.Priority == TaskManager.Models.TaskPriority.Critical ? "bg-danger" :
+                                                                         task.Priority == TaskManager.Models.TaskPriority.Medium ? "bg-warning" : "bg-secondary")">
+                        @task.Priority
+                    </span>
+                </td>
+                <td>@(task.DueDate?.ToString("MMM dd, yyyy") ?? "No due date")</td>
+                <td>
+                    <form asp-action="ToggleCompletion" asp-route-id="@task.Id" method="post" style="display: inline;">
+                        <button type="submit" class="btn btn-sm @(task.IsCompleted ? "btn-warning" : "btn-success")">
+                            @(task.IsCompleted ? "Mark Pending" : "Mark Complete")
+                        </button>
+                    </form>
+                </td>
+                <td>
+                    <div class="btn-group" role="group">
+                        <a asp-action="Details" asp-route-id="@task.Id" class="btn btn-sm btn-info">Details</a>
+                        <a asp-action="Edit" asp-route-id="@task.Id" class="btn btn-sm btn-primary">Edit</a>
+                        <a asp-action="Delete" asp-route-id="@task.Id" class="btn btn-sm btn-danger">Delete</a>
+                    </div>
+                </td>
+            </tr>
+                        }
+        </tbody>
+    </table>
+</div>
